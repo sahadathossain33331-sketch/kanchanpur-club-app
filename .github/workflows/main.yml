@@ -24,6 +24,26 @@ jobs:
       - name: Create Android project
         run: flutter create --platforms=android .
 
+      - name: Add Internet permission
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          file = Path("android/app/src/main/AndroidManifest.xml")
+          text = file.read_text()
+
+          permission = '<uses-permission android:name="android.permission.INTERNET"/>'
+
+          if permission not in text:
+              text = text.replace(
+                  '<manifest xmlns:android="http://schemas.android.com/apk/res/android">',
+                  '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    ' + permission
+              )
+
+          file.write_text(text)
+          print("Internet permission added.")
+          PY
+
       - name: Get dependencies
         run: flutter pub get
 
